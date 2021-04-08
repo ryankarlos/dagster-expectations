@@ -2,4 +2,4 @@ dagster
 dagit
 great_expectations
 pandas
-
+neuralprophet
