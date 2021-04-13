@@ -28,9 +28,8 @@ def get_data_dir_path():
     return os.path.join(get_repo_root(), "data")
 
 
-def read_csv_from_gh(url, filename, overwrite=False):
+def read_csv_from_gh(url, filepath, overwrite=False):
     req = requests.get(url, allow_redirects=True)
-    filepath = os.path.join(get_data_dir_path(), filename)
     if os.path.exists(filepath) and overwrite is True:
         LOG.info("Found existing file --- so deleting and creating new one")
         with open(filepath, "wb") as f:
@@ -46,9 +45,5 @@ def read_csv_from_gh(url, filename, overwrite=False):
             f.write(req.content)
 
 
-if __name__ == "__main__":
-    url = "https://github.com/facebook/prophet/blob/master/examples/example_wp_log_peyton_manning.csv"
-    filename = "manning.csv"
-    x = get_data_dir_path()
-    print(x)
-    read_csv_from_gh(url, filename, overwrite=True)
+
+

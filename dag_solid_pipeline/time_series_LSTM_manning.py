@@ -2,13 +2,17 @@ import pandas as pd
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-from io_utils.load_data import read_csv_from_gh
+from io_utils.load_data import read_csv_from_gh, get_data_dir_path
+import os
 
-window_size = 70
-batch_size = 64
-shuffle_buffer_size = 1000
-split_time = 2920
-epochs = 70
+URL = "https://github.com/facebook/prophet/blob/master/examples/example_wp_log_peyton_manning.csv"
+FILENAME = "manning.csv"
+FILEPATH= os.path.join(get_data_dir_path(), FILENAME)
+WINDOW_SIZE = 70
+BATCH_SIZE = 64
+SHUFFLE_BUFFER_SIZE = 1000
+SPLIT_TIME = 2920
+EPOCHS = 20
 
 
 def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
@@ -63,6 +67,7 @@ def model_forecast(model, series, window_size):
     forecast = model.predict(ds)
     return forecast
 
+
 def plot_series(time, series, format="-", start=0, end=None):
     plt.plot(time[start:end], series[start:end], format)
     plt.xlabel("Time")
@@ -98,26 +103,28 @@ def plot_acc_loss(history):
 
 
 if __name__ == "__main__":
+    if not os.path.exists("data/manning.csv"):
+        read_csv_from_gh(URL, FILEPATH, overwrite=True)
     df = pd.read_csv("data/manning.csv")
     time = df["ds"]
     series = df["y"]
     time_train, x_train, time_valid, x_valid = train_test_split_series_time(
-        series, time, split_time
+        series, time, SPLIT_TIME
     )
 
     train_set = windowed_dataset(
         x_train,
-        window_size=window_size,
-        batch_size=batch_size,
-        shuffle_buffer=shuffle_buffer_size,
+        window_size=WINDOW_SIZE,
+        batch_size=BATCH_SIZE,
+        shuffle_buffer=SHUFFLE_BUFFER_SIZE,
     )
 
     model = build_rnn_timeseries_model()
     compile_model(model)
-    history = model.fit(train_set, epochs=epochs)
+    history = model.fit(train_set, epochs=EPOCHS)
     plt = plot_acc_loss(history)
     plt.show()
-    #rnn_forecast = model_forecast(model, series[..., np.newaxis], window_size)
-    #rnn_forecast = rnn_forecast[split_time - window_size : -1, -1, 0]
-    #mae = tf.keras.metrics.mean_absolute_error(x_valid, rnn_forecast).numpy()
-    #print(f"Mean Absolute Error: {mae}")
+    # rnn_forecast = model_forecast(model, series[..., np.newaxis], window_size)
+    # rnn_forecast = rnn_forecast[split_time - window_size : -1, -1, 0]
+    # mae = tf.keras.metrics.mean_absolute_error(x_valid, rnn_forecast).numpy()
+    # print(f"Mean Absolute Error: {mae}")
