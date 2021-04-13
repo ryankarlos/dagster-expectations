@@ -1,12 +1,14 @@
 import pandas as pd
 import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
 from io_utils.load_data import read_csv_from_gh
 
-window_size = 60
-batch_size = 100
+window_size = 70
+batch_size = 64
 shuffle_buffer_size = 1000
-split_time = 2500
-epochs = 50
+split_time = 2920
+epochs = 70
 
 
 def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
@@ -61,6 +63,39 @@ def model_forecast(model, series, window_size):
     forecast = model.predict(ds)
     return forecast
 
+def plot_series(time, series, format="-", start=0, end=None):
+    plt.plot(time[start:end], series[start:end], format)
+    plt.xlabel("Time")
+    plt.ylabel("Value")
+    plt.grid(True)
+    plt.show()
+
+
+def compute_loss(history):
+    """
+    Computes training and val loss and accuracy
+    """
+    loss = history.history["loss"]
+    mae= history.history["mae"]
+
+    return mae, loss
+
+
+def plot_acc_loss(history):
+    """
+    Plots the chart for accuracy and loss on both training and validation
+    """
+
+    mae, loss = compute_loss(history)
+    epochs = range(len(mae))
+    plt.figure()
+    plt.title("Training and validation loss")
+    plt.plot(epochs, mae, "r", label="mae")
+    plt.plot(epochs, loss, "b", label="Training Loss")
+    plt.legend()
+
+    return plt
+
 
 if __name__ == "__main__":
     df = pd.read_csv("data/manning.csv")
@@ -80,7 +115,9 @@ if __name__ == "__main__":
     model = build_rnn_timeseries_model()
     compile_model(model)
     history = model.fit(train_set, epochs=epochs)
-    rnn_forecast = model_forecast(model, series[..., np.newaxis], window_size)
-    rnn_forecast = rnn_forecast[split_time - window_size : -1, -1, 0]
-    mae = tf.keras.metrics.mean_absolute_error(x_valid, rnn_forecast).numpy()
-    print(f"Mean Absolute Error: {mae}")
+    plt = plot_acc_loss(history)
+    plt.show()
+    #rnn_forecast = model_forecast(model, series[..., np.newaxis], window_size)
+    #rnn_forecast = rnn_forecast[split_time - window_size : -1, -1, 0]
+    #mae = tf.keras.metrics.mean_absolute_error(x_valid, rnn_forecast).numpy()
+    #print(f"Mean Absolute Error: {mae}")
