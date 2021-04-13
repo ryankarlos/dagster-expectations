@@ -63,9 +63,9 @@ def model_forecast(model, series, window_size):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('data/manning.csv')
-    time = df['ds']
-    series = df['y']
+    df = pd.read_csv("data/manning.csv")
+    time = df["ds"]
+    series = df["y"]
     time_train, x_train, time_valid, x_valid = train_test_split_series_time(
         series, time, split_time
     )
@@ -81,6 +81,6 @@ if __name__ == "__main__":
     compile_model(model)
     history = model.fit(train_set, epochs=epochs)
     rnn_forecast = model_forecast(model, series[..., np.newaxis], window_size)
-    rnn_forecast = rnn_forecast[split_time - window_size: -1, -1, 0]
+    rnn_forecast = rnn_forecast[split_time - window_size : -1, -1, 0]
     mae = tf.keras.metrics.mean_absolute_error(x_valid, rnn_forecast).numpy()
     print(f"Mean Absolute Error: {mae}")
