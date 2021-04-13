@@ -2,3 +2,7 @@ dagster
 dagit
 pandas
 vaex
+requests
+# for install tf with python 3.9
+tf-nightly
+pygit2
