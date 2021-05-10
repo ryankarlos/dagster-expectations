@@ -16,13 +16,14 @@ boto3 = "^1.17.70"
 sklearn = "^0.0"
 tf-nightly = "^2.6.0-alpha.20210510"
 catboost = "^0.25.1"
+mypy = "^0.812"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 flake8 = "^3.9.2"
 black = "^21.5b1"
 pylint = "^2.8.2"
-mypy = "^0.812"
+pre-commit = "^2.12.1"
 GitPython = "^3.1.15"
 
 
