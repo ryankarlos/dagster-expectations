@@ -1,7 +1,9 @@
-import requests
-import os
 import logging
-from pygit2 import discover_repository, Repository
+import os
+
+import requests
+
+from pygit2 import Repository, discover_repository
 
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
@@ -43,7 +45,3 @@ def read_csv_from_gh(url, filepath, overwrite=False):
         LOG.info("File not present, so creating new csv and writing data")
         with open(filepath, "wb") as f:
             f.write(req.content)
-
-
-
-

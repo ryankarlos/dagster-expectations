@@ -1,13 +1,14 @@
+import os
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
-from io_utils.load_data import read_csv_from_gh, get_data_dir_path
-import os
+from io_utils.load_data import get_data_dir_path, read_csv_from_gh
 
 URL = "https://github.com/facebook/prophet/blob/master/examples/example_wp_log_peyton_manning.csv"
 FILENAME = "manning.csv"
-FILEPATH= os.path.join(get_data_dir_path(), FILENAME)
+FILEPATH = os.path.join(get_data_dir_path(), FILENAME)
 WINDOW_SIZE = 70
 BATCH_SIZE = 64
 SHUFFLE_BUFFER_SIZE = 1000
@@ -81,7 +82,7 @@ def compute_loss(history):
     Computes training and val loss and accuracy
     """
     loss = history.history["loss"]
-    mae= history.history["mae"]
+    mae = history.history["mae"]
 
     return mae, loss
 
