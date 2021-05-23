@@ -5,8 +5,10 @@ solids:
             value: "https://raw.githubusercontent.com/pandas-dev/pandas/master/pandas/tests/io/data/csv/iris.csv"
       run_kmean:
         config:
-            clusters: 2
-            mapper: {'0': 'Iris-versicolor', '1': 'Iris-setosa', '2': 'Iris-virginica'}
+            clusters: 3
+      add_predictions:
+        config:
+            mapper: {'2': 'Iris-versicolor', '1': 'Iris-setosa', '0': 'Iris-virginica'}
       plot_clusters:
         config:
             mapper: {'Iris-versicolor': 'red', 'Iris-setosa': 'green', 'Iris-virginica': 'blue'}

@@ -2,11 +2,13 @@ import io
 
 import requests
 
+import numpy as np
 import pandas as pd
 import pylab as plt
-from dagster import (InputDefinition, Int, OutputDefinition, String, pipeline,
-                     repository, solid)
+from dagster import (Array, InputDefinition, Int, OutputDefinition, String,
+                     pipeline, repository, solid)
 from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
 from utils.dagster_types import PandasDataFrame
 
 
@@ -23,32 +25,41 @@ def read_iris_csv(context, url):
 
 
 @solid(
-    config_schema={"clusters": Int, "mapper": dict},
     input_defs=[InputDefinition(name="df", dagster_type=PandasDataFrame)],
-    output_defs=[OutputDefinition(PandasDataFrame)],
+    # output_defs=[OutputDefinition(Array)],
 )
-def run_kmean(context, df):
-    X = df.iloc[:, 0:3].values
+def transform_to_array(context, df):
+    return df.iloc[:, 0:3].values
+
+
+@solid(
+    config_schema={"clusters": Int, "mapper": dict},
+    # input_defs=[InputDefinition(name="X", dagster_type=Array)],
+)
+def run_kmean(context, X):
+
     clusters = context.solid_config["clusters"]
-    context.log.info(f"Running k means on {clusters}")
-    kmeans = KMeans(n_clusters=clusters).fit(X)
-    c = kmeans.predict(X)
+    context.log.info(f"Running k means with {clusters} clusters")
+    model = KMeans(n_clusters=clusters, random_state=42).fit(X)
+    return model
+
+
+@solid
+def add_predictions(context, model, X):
+    c = model.predict(X)
     mapper = context.solid_config["mapper"]
-    df["Predicted"] = pd.Series([mapper[str(i)] for i in c])
-    return df
+    return pd.Series([mapper[str(i)] for i in c])
 
 
 @solid(config_schema={"mapper": dict})
-def plot_clusters(context, df):
+def plot_clusters(context, df, preds):
     color_mapper = context.solid_config["mapper"]
     plt.figure(figsize=(12, 5))
     plt.subplot(121)
     plt.scatter(df["PetalLength"], df["PetalWidth"], c=df["Name"].map(color_mapper))
     plt.title("Original classes")
     plt.subplot(122)
-    plt.scatter(
-        df["PetalLength"], df["PetalWidth"], c=df["Predicted"].map(color_mapper)
-    )
+    plt.scatter(df["PetalLength"], df["PetalWidth"], c=preds.map(color_mapper))
     plt.title("Predicted classes")
     plt.tight_layout()
     plt.show()
@@ -56,8 +67,10 @@ def plot_clusters(context, df):
 
 @pipeline
 def serial_pipeline():
-    model_df = run_kmean(read_iris_csv())
-    plot_clusters(model_df)
+    df = read_iris_csv()
+    model = run_kmean(transform_to_array(df))
+    preds = add_predictions(model, transform_to_array(df))
+    plot_clusters(df, preds)
 
 
 @repository

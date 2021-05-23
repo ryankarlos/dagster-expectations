@@ -14,6 +14,7 @@ history/
 .telemetry
 .logs_queue
 schedules
+storage/
 
 # Distribution / packaging
 .Python
