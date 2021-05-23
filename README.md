@@ -1,2 +1,4 @@
 # dagster-expectations
-playing around with dagster and trying out expectations for validation testing
+
+Checking out different Dagster capabilited with some toy datasets. 
+
