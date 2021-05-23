@@ -11,6 +11,9 @@ __pycache__/
 
 # dagster history
 history/
+.telemetry
+.logs_queue
+schedules
 
 # Distribution / packaging
 .Python
