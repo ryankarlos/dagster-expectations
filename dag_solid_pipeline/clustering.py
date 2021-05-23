@@ -4,12 +4,17 @@ import requests
 
 import pandas as pd
 import pylab as plt
-from dagster import Int, pipeline, repository, solid
+from dagster import (InputDefinition, Int, OutputDefinition, String, pipeline,
+                     repository, solid)
 from sklearn.cluster import KMeans
+from utils.dagster_types import PandasDataFrame
 
 
-# @solid(required_resource_keys={"warehouse"}, config_schema={"url": str})
-@solid
+# @solid(required_resource_keys={"warehouse"})
+@solid(
+    input_defs=[InputDefinition(name="url", dagster_type=String)],
+    output_defs=[OutputDefinition(PandasDataFrame)],
+)
 def read_iris_csv(context, url):
     s = requests.get(url).text
     df = pd.read_csv(io.StringIO(s))
@@ -17,7 +22,11 @@ def read_iris_csv(context, url):
     return df
 
 
-@solid(config_schema={"clusters": Int, "mapper": dict})
+@solid(
+    config_schema={"clusters": Int, "mapper": dict},
+    input_defs=[InputDefinition(name="df", dagster_type=PandasDataFrame)],
+    output_defs=[OutputDefinition(PandasDataFrame)],
+)
 def run_kmean(context, df):
     X = df.iloc[:, 0:3].values
     clusters = context.solid_config["clusters"]

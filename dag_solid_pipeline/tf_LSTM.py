@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
 from dagster import solid
-from utils.load_data import get_data_dir_path, read_csv_from_gh
+from utils.repo_path import get_data_dir_path, read_csv_from_gh
 
 URL = (
     "https://raw.githubusercontent.com/facebook/prophet/master/"
