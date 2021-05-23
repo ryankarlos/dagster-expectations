@@ -14,11 +14,12 @@ great-expectations = "^0.13.19"
 SQLAlchemy = "^1.4.14"
 boto3 = "^1.17.70"
 sklearn = "^0.0"
-tf-nightly = "^2.6.0-alpha.20210510"
+tensorflow = "^2.5.0"
 catboost = "^0.25.1"
 mypy = "^0.812"
 pygit2 = "^1.5.0"
 requests = "^2.25.1"
+psycopg2-binary = "^2.8.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"

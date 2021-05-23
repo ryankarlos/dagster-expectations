@@ -1,21 +1,25 @@
 import os
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import tensorflow as tf
-from io_utils.load_data import get_data_dir_path, read_csv_from_gh
+from dagster import solid
+from utils.load_data import get_data_dir_path, read_csv_from_gh
 
-URL = "https://github.com/facebook/prophet/blob/master/examples/example_wp_log_peyton_manning.csv"
+URL = (
+    "https://raw.githubusercontent.com/facebook/prophet/master/"
+    "examples/example_wp_log_peyton_manning.csv"
+)
 FILENAME = "manning.csv"
 FILEPATH = os.path.join(get_data_dir_path(), FILENAME)
 WINDOW_SIZE = 70
 BATCH_SIZE = 64
 SHUFFLE_BUFFER_SIZE = 1000
-SPLIT_TIME = 2920
-EPOCHS = 20
+SPLIT_TIME = 0.8
+EPOCHS = 15
 
 
+@solid
 def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
     series = tf.expand_dims(series, axis=-1)
     ds = tf.data.Dataset.from_tensor_slices(series)
@@ -26,11 +30,12 @@ def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
     return ds.batch(batch_size).prefetch(1)
 
 
-def train_test_split_series_time(series, time, split_time):
-    time_train = time[:split_time]
-    x_train = series[:split_time]
-    time_valid = time[split_time:]
-    x_valid = series[split_time:]
+def train_test_split_series_time(series, time):
+    split = round(time.shape[0] * SPLIT_TIME)
+    time_train = time[:split]
+    x_train = series[:split]
+    time_valid = time[split:]
+    x_valid = series[split:]
     return time_train, x_train, time_valid, x_valid
 
 
@@ -110,7 +115,7 @@ if __name__ == "__main__":
     time = df["ds"]
     series = df["y"]
     time_train, x_train, time_valid, x_valid = train_test_split_series_time(
-        series, time, SPLIT_TIME
+        series, time
     )
 
     train_set = windowed_dataset(
@@ -123,8 +128,8 @@ if __name__ == "__main__":
     model = build_rnn_timeseries_model()
     compile_model(model)
     history = model.fit(train_set, epochs=EPOCHS)
-    plt = plot_acc_loss(history)
-    plt.show()
+    fig = plot_acc_loss(history)
+    fig.show()
     # rnn_forecast = model_forecast(model, series[..., np.newaxis], window_size)
     # rnn_forecast = rnn_forecast[split_time - window_size : -1, -1, 0]
     # mae = tf.keras.metrics.mean_absolute_error(x_valid, rnn_forecast).numpy()

@@ -1,0 +1,3 @@
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - plot_clusters - STEP_START - Started execution of step "plot_clusters".
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - plot_clusters - LOADED_INPUT - Loaded input "df" using input manager "io_manager", from output "result" of step "run_kmean"
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - plot_clusters - STEP_INPUT - Got input "df" of type "Any". (Type check passed).

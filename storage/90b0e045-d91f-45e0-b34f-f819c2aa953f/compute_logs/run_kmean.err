@@ -1,0 +1,7 @@
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - run_kmean - STEP_START - Started execution of step "run_kmean".
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - run_kmean - LOADED_INPUT - Loaded input "df" using input manager "io_manager", from output "result" of step "read_iris_csv"
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - run_kmean - STEP_INPUT - Got input "df" of type "Any". (Type check passed).
+[32m2021-05-23 01:37:25[0m - dagster - [34mINFO[0m - system - 90b0e045-d91f-45e0-b34f-f819c2aa953f - run_kmean - Running k means on 2
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - run_kmean - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - run_kmean - HANDLED_OUTPUT - Handled output "result" using IO manager "io_manager"
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - run_kmean - STEP_SUCCESS - Finished execution of step "run_kmean" in 55ms.

@@ -1,0 +1,10 @@
+# and this config sets the credentials via DB connection string / url:
+
+# This config gets the DB connection string / url via environment variables:
+#run_storage:
+#  module: dagster_postgres.run_storage
+#  class: PostgresRunStorage
+#  config:
+#    postgres_url:
+#      env: PG_DB_CONN_STRING
+# "postgresql+psycopg2://postgres:rwbo1103@localhost:5432/dagster"

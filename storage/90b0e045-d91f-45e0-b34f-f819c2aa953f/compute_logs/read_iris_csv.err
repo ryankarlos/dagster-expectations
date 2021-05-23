@@ -1,0 +1,6 @@
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - read_iris_csv - STEP_START - Started execution of step "read_iris_csv".
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - read_iris_csv - STEP_INPUT - Got input "url" of type "Any". (Type check passed).
+[32m2021-05-23 01:37:25[0m - dagster - [34mINFO[0m - system - 90b0e045-d91f-45e0-b34f-f819c2aa953f - read_iris_csv - loaded dataset
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - read_iris_csv - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - read_iris_csv - HANDLED_OUTPUT - Handled output "result" using IO manager "io_manager"
+[32m2021-05-23 01:37:25[0m - dagster - [34mDEBUG[0m - serial_pipeline - 90b0e045-d91f-45e0-b34f-f819c2aa953f - 69669 - read_iris_csv - STEP_SUCCESS - Finished execution of step "read_iris_csv" in 126ms.

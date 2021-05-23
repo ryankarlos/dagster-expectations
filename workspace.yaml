@@ -1,0 +1,4 @@
+load_from:
+  - python_file:
+      relative_path: dag_solid_pipeline/clustering.py
+      attribute: clustering_repository
