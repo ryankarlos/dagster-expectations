@@ -1,41 +1,7 @@
-from contextlib import contextmanager
-
 from dagster import resource
 from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import sessionmaker
 
-from .models import Base, DataSource
-
-
-@contextmanager
-def session_scope(Base, engine):
-    Base.metadata.bind = engine
-    # Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    try:
-        yield session
-        session.commit()
-    except SQLAlchemyError as e:
-        session.rollback()
-        print(e)
-        raise
-    finally:
-        session.close()
-
-
-def write_df_json_to_row(context, df, engine):
-    run_id = context.run_id
-    version = 1
-    name = context.solid_handle.name
-    json_str = df.to_json()
-    with session_scope(Base, engine) as session:
-        row = DataSource(run_id, name, version, json_str)
-        context.log.info(f"Writing run with serialised json data input {row}")
-        session.add(row)
+from .models import Base, write_df_json_to_row, write_model_plot_to_row
 
 
 class SqlAlchemyPostgresWarehouse:
@@ -44,7 +10,10 @@ class SqlAlchemyPostgresWarehouse:
         self._engine = create_engine(self._conn_str)
 
     def handle_data_output(self, context, obj):
-        write_df_json_to_row(context, obj, self._engine)
+        write_df_json_to_row(context, obj, Base, self._engine)
+
+    def update_model_plot(self, context, obj):
+        write_model_plot_to_row(context, obj, Base, self._engine)
 
 
 @resource
