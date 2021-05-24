@@ -1,8 +1,41 @@
-from dagster import Field, String, resource
-from models import Base, DataSource
+from contextlib import contextmanager
+
+from dagster import resource
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
+
+from .models import Base, DataSource
+
+
+@contextmanager
+def session_scope(Base, engine):
+    Base.metadata.bind = engine
+    # Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(e)
+        raise
+    finally:
+        session.close()
+
+
+def write_df_json_to_row(context, df, engine):
+    run_id = context.run_id
+    version = 1
+    name = context.solid_handle.name
+    json_str = df.to_json()
+    with session_scope(Base, engine) as session:
+        row = DataSource(run_id, name, version, json_str)
+        context.log.info(f"Writing run with serialised json data input {row}")
+        session.add(row)
 
 
 class SqlAlchemyPostgresWarehouse:
@@ -10,36 +43,11 @@ class SqlAlchemyPostgresWarehouse:
         self._conn_str = conn_str
         self._engine = create_engine(self._conn_str)
 
-    def update_records(self, records):
-        Base.metadata.bind = self._engine
-        # Base.metadata.drop_all(self._engine)
-        Base.metadata.create_all(self._engine)
-        # with self._engine.connect() as connection:
-        # raw_data = Base.metadata.tables['raw_data']
-        # result = connection.execute(raw_data.insert().values(run_id=10, name= "hello", version=2, data='1'))
-        # update data
-        Session = sessionmaker()
-        Session.configure(bind=self._engine)
-        session = Session()
-        try:
-            for item in records:
-                row = DataSource(**item)
-                session.add(row)
-            session.commit()
-        except SQLAlchemyError as e:
-            print(e)
-        finally:
-            session.close()
+    def handle_data_output(self, context, obj):
+        write_df_json_to_row(context, obj, self._engine)
 
 
-@resource(config_schema={"conn_str": Field(String)})
+@resource
 def postgres_warehouse_resource(_init_context):
-    return SqlAlchemyPostgresWarehouse(_init_context.resource_config["conn_str"])
-
-
-if __name__ == "__main__":
-    pg = SqlAlchemyPostgresWarehouse(
-        "postgresql+psycopg2://postgres:rwbo1103@localhost:5432/dagster"
-    )
-
-    pg.update_records()
+    conn = _init_context.resource_config["conn_str"]
+    return SqlAlchemyPostgresWarehouse(conn)

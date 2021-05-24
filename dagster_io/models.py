@@ -6,10 +6,9 @@ Base = declarative_base()
 
 
 class DataSource(Base):
+    __tablename__ = "datastore"
 
-    __tablename__ = "raw_data"
-
-    run_id = Column(Integer, primary_key=True)
+    run_id = Column(String, primary_key=True)
     name = Column(String(80))
     version = Column(Integer)
     data = Column(String)
@@ -21,11 +20,12 @@ class DataSource(Base):
         self.data = data
 
     def __repr__(self):
-        return "<Data(run_id='{}', name='{}', version={}, data={})>".format(
+        return "<Data(run_id='{}', name='{}', version='{}', data={})>".format(
             self.run_id, self.name, self.version, self.data
         )
 
 
+"""
 class Features(Base):
     __tablename__ = "features"
     user_id = Column(Integer, primary_key=True)
@@ -59,3 +59,4 @@ class Model(Base):
 
     def __repr__(self):
         return f"Order(user_id={self.user_id}, " f"shipped={self.shipped})"
+"""

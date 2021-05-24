@@ -1,3 +1,7 @@
+resources:
+  postgres:
+    config:
+      conn_str: "postgresql+psycopg2://postgres:rwbo1103@localhost:5432/dagster?options=-c%20search_path=dagexp"
 solids:
       read_iris_csv:
         inputs:
